@@ -5,7 +5,11 @@ import {
 } from '@angular/platform-browser';
 
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import {
+  provideFirestore,
+  getFirestore,
+  connectFirestoreEmulator,
+} from '@angular/fire/firestore';
 
 import { environment } from '../environments/environment';
 
@@ -15,6 +19,12 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
 
     provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideFirestore(() => getFirestore()),
+    provideFirestore(() => {
+      const fs = getFirestore();
+      if (!environment.production) {
+        connectFirestoreEmulator(fs, 'localhost', 8080);
+      }
+      return fs;
+    }),
   ],
 };

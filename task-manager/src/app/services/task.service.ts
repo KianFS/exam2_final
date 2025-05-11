@@ -1,23 +1,22 @@
 import { Injectable } from '@angular/core';
+import { Firestore, collectionData } from '@angular/fire/firestore';
 import {
-  Firestore,
   collection,
-  collectionData,
   addDoc,
   doc,
   updateDoc,
   CollectionReference,
   DocumentData,
-} from '@angular/fire/firestore';
+} from 'firebase/firestore';
 import { Observable } from 'rxjs';
 import { Task } from '../models/task.model';
 
 @Injectable({ providedIn: 'root' })
 export class TaskService {
-  private readonly tasksCol: CollectionReference<DocumentData>;
+  constructor(private firestore: Firestore) {}
 
-  constructor(private firestore: Firestore) {
-    this.tasksCol = collection(this.firestore, 'tasks');
+  private get tasksCol(): CollectionReference<DocumentData> {
+    return collection(this.firestore, 'tasks');
   }
 
   getTasks(): Observable<Task[]> {
@@ -26,6 +25,7 @@ export class TaskService {
     >;
   }
 
+  /** add a brand‑new task */
   addTask(title: string): Promise<void> {
     return addDoc(this.tasksCol, { title, completed: false }).then(() => {});
   }
